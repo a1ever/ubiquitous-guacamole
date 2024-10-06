@@ -4,6 +4,57 @@ option csharp_namespace = "UserService";
 
 package userService;
 
-service UserService {
+import "google/protobuf/wrappers.proto";
 
+message CreateUserRequest {
+  string login = 1;
+  string password = 2;
+  string name = 3;
+  string surname = 4;
+  int32 age = 5;
+}
+
+message GetByIdRequest {
+  int32 id = 1;
+}
+
+message GetByNameRequest {
+  string name = 1;
+  string surname = 2;
+}
+
+message UpdateRequest {
+  string login = 1;
+  string password = 2;
+  string name = 3;
+  string surname = 4;
+  int32 age = 5;
+}
+
+message DeleteRequest {
+  int32 id = 1;
+}
+
+message SuccessReply {
+  bool response = 1;
+}
+
+message UserDataReply {
+  int32 id = 1;
+  google.protobuf.StringValue login = 2;
+  google.protobuf.StringValue name = 3;
+  google.protobuf.StringValue surname = 4;
+  google.protobuf.Int32Value age = 5;
+}
+
+message UsersDataReply {
+  repeated UserDataReply users = 1;
+}
+
+service UserService {
+  rpc CreateUser (CreateUserRequest) returns (UserDataReply);
+  rpc GetById (GetByIdRequest) returns (UserDataReply);
+  rpc GetByName (GetByNameRequest) returns (UsersDataReply);
+  rpc Update (UpdateRequest) returns (SuccessReply);
+  rpc Delete (DeleteRequest) returns (SuccessReply);
 }

@@ -68,9 +68,23 @@ public class UserDomainService : IUserDomainService
         return _userMapper.ToDto(user);
     }
 
-    public async Task<IEnumerable<User>> GetUsersByNameAsync(string name, string surname)
+    public async Task<IEnumerable<UserResponseDto>?> GetUsersByNameAsync(string name, string surname)
     {
-        return await _userRepository.GetUsersByNameAsync(name, surname);
+        IEnumerable<User> users = await _userRepository.GetUsersByNameAsync(name, surname);
+
+        if (users == null || !users.Any())
+        {
+            return null;
+        }
+        
+        IEnumerable<UserResponseDto> usersDto = new List<UserResponseDto>();
+
+        foreach (var user in users)
+        {
+            usersDto.Append(_userMapper.ToDto(user));
+        }
+        
+        return usersDto;
     }
 
     public async Task<bool> UpdateUserAsync(UserRequestDto user)

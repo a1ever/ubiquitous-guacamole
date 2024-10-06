@@ -8,6 +8,6 @@ public interface IUserDomainService
     Task<UserResponseDto> CreateUserAsync(UserRequestDto dto);
     Task<UserResponseDto?> GetUserByIdAsync(int id);
     Task<IEnumerable<User>> GetUsersByNameAsync(string name, string surname);
-    Task<bool> UpdateUserAsync(User user);
+    Task<bool> UpdateUserAsync(UserRequestDto user);
     Task<bool> DeleteUserAsync(int id);
 }

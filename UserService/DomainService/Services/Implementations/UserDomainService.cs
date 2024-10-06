@@ -1,4 +1,5 @@
-﻿using UserService.DomainService.Domain;
+﻿using FluentValidation;
+using UserService.DomainService.Domain;
 using UserService.DomainService.Repositories.Abstractions;
 using UserService.DomainService.Services.Abstractions;
 using UserService.DomainService.DTOs;
@@ -10,15 +11,30 @@ public class UserDomainService : IUserDomainService
 {
     private readonly IUserRepository _userRepository;
     private readonly UserMapper _userMapper;
+    private readonly IValidator<UserRequestDto> _createUserValidator;
+    private readonly IValidator<UserRequestDto> _updateUserValidator;
 
-    public UserDomainService(IUserRepository userRepository, UserMapper userMapper)
+    public UserDomainService(
+        IUserRepository userRepository,
+        UserMapper userMapper,
+        IValidator<UserRequestDto> createUserValidator,
+        IValidator<UserRequestDto> updateUserValidator)
     {
         _userRepository = userRepository;
         _userMapper = userMapper;
+        _createUserValidator = createUserValidator;
+        _updateUserValidator = updateUserValidator;
     }
 
     public async Task<UserResponseDto> CreateUserAsync(UserRequestDto dto)
     {
+        // Валидация входящих данных при создании
+        var validationResult = _createUserValidator.Validate(dto);
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.Errors);
+        }
+
         // Маппинг из DTO в доменную модель
         var user = _userMapper.ToDomain(dto);
 
@@ -31,10 +47,9 @@ public class UserDomainService : IUserDomainService
 
         // Создание пользователя
         bool wasUserCreated = await _userRepository.CreateUserAsync(user);
-
         if (!wasUserCreated)
         {
-            throw new InvalidOperationException("Не удалось создать пользователя");
+            throw new InvalidOperationException("Не удалось создать пользователя.");
         }
 
         // Маппинг из доменной модели в DTO для ответа
@@ -58,19 +73,39 @@ public class UserDomainService : IUserDomainService
         return await _userRepository.GetUsersByNameAsync(name, surname);
     }
 
-    public async Task<bool> UpdateUserAsync(User user)
+    public async Task<bool> UpdateUserAsync(UserRequestDto user)
     {
-        // Проверка существования пользователя
-        var existingUser = await _userRepository.GetUserByIdAsync(user.Id);
+        // Валидация входящих данных при обновлении
+        var validationResult = _updateUserValidator.Validate(user);
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult.Errors);
+        }
+
+        var existingUser = await _userRepository.GetUserByLoginAsync(user.Login);
         if (existingUser == null)
         {
             throw new InvalidOperationException("Пользователь не найден.");
         }
 
-        // Предотвращаем изменение логина
-        user.Login = existingUser.Login;
+        if (existingUser.Password != user.Password)
+        {
+            throw new InvalidOperationException("Неверный пароль.");
+        }
 
-        return await _userRepository.UpdateUserAsync(user);
+        // Обновляем только те поля, которые не null
+        var userToUpdate = new User
+        {
+            Id = existingUser.Id,
+            Login = existingUser.Login,
+            Password = user.Password ?? existingUser.Password,
+            Name = user.Name ?? existingUser.Name,
+            Surname = user.Surname ?? existingUser.Surname,
+            Age = user.Age ?? existingUser.Age
+        };
+
+        // Выполняем обновление пользователя в базе данных
+        return await _userRepository.UpdateUserAsync(userToUpdate);
     }
 
     public async Task<bool> DeleteUserAsync(int id)

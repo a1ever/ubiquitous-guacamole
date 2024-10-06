@@ -25,10 +25,10 @@ message GetByNameRequest {
 
 message UpdateRequest {
   string login = 1;
-  string password = 2;
-  string name = 3;
-  string surname = 4;
-  int32 age = 5;
+  google.protobuf.StringValue password = 2;
+  google.protobuf.StringValue name = 3;
+  google.protobuf.StringValue surname = 4;
+  google.protobuf.Int32Value age = 5;
 }
 
 message DeleteRequest {
@@ -41,10 +41,10 @@ message SuccessReply {
 
 message UserDataReply {
   int32 id = 1;
-  google.protobuf.StringValue login = 2;
-  google.protobuf.StringValue name = 3;
-  google.protobuf.StringValue surname = 4;
-  google.protobuf.Int32Value age = 5;
+  string login = 2;
+  string name = 3;
+  string surname = 4;
+  int32 age = 5;
 }
 
 message UsersDataReply {

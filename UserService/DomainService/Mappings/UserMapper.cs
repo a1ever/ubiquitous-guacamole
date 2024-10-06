@@ -7,6 +7,6 @@ namespace UserService.DomainService.Mappings;
 [Mapper]
 public partial class UserMapper
 {
-    public partial User ToDomain(CreateUserRequestDto dto);
+    public partial User ToDomain(UserRequestDto dto);
     public partial UserResponseDto ToDto(User user);
 }

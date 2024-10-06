@@ -88,11 +88,6 @@ public class UserDomainService : IUserDomainService
             throw new InvalidOperationException("Пользователь не найден.");
         }
 
-        if (existingUser.Password != user.Password)
-        {
-            throw new InvalidOperationException("Неверный пароль.");
-        }
-
         // Обновляем только те поля, которые не null
         var userToUpdate = new User
         {

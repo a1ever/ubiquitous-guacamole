@@ -1,20 +1,27 @@
 ﻿using UserService.DomainService.Domain;
 using UserService.DomainService.Repositories.Abstractions;
 using UserService.DomainService.Services.Abstractions;
+using UserService.DomainService.DTOs;
+using UserService.DomainService.Mappings;
 
 namespace UserService.DomainService.Services.Implementations;
 
 public class UserDomainService : IUserDomainService
 {
     private readonly IUserRepository _userRepository;
+    private readonly UserMapper _userMapper;
 
-    public UserDomainService(IUserRepository userRepository)
+    public UserDomainService(IUserRepository userRepository, UserMapper userMapper)
     {
         _userRepository = userRepository;
+        _userMapper = userMapper;
     }
 
-    public async Task<User> CreateUserAsync(User user)
+    public async Task<UserResponseDto> CreateUserAsync(CreateUserRequestDto dto)
     {
+        // Маппинг из DTO в доменную модель
+        var user = _userMapper.ToDomain(dto);
+
         // Проверка уникальности логина
         var existingUser = await _userRepository.GetUserByLoginAsync(user.Login);
         if (existingUser != null)
@@ -22,7 +29,11 @@ public class UserDomainService : IUserDomainService
             throw new InvalidOperationException("Пользователь с таким логином уже существует.");
         }
 
-        return await _userRepository.CreateUserAsync(user);
+        // Создание пользователя
+        var createdUser = await _userRepository.CreateUserAsync(user);
+
+        // Маппинг из доменной модели в DTO для ответа
+        return _userMapper.ToDto(createdUser);
     }
 
     public async Task<User?> GetUserByIdAsync(int id)

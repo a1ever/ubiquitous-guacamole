@@ -30,15 +30,27 @@ public class UserDomainService : IUserDomainService
         }
 
         // Создание пользователя
-        var createdUser = await _userRepository.CreateUserAsync(user);
+        bool wasUserCreated = await _userRepository.CreateUserAsync(user);
+
+        if (!wasUserCreated)
+        {
+            throw new InvalidOperationException("Не удалось создать пользователя");
+        }
 
         // Маппинг из доменной модели в DTO для ответа
-        return _userMapper.ToDto(createdUser);
+        return _userMapper.ToDto(user);
     }
 
-    public async Task<User?> GetUserByIdAsync(int id)
+    public async Task<UserResponseDto?> GetUserByIdAsync(int id)
     {
-        return await _userRepository.GetUserByIdAsync(id);
+        User? user = await _userRepository.GetUserByIdAsync(id);
+
+        if (user is null)
+        {
+            return null;
+        }
+
+        return _userMapper.ToDto(user);
     }
 
     public async Task<IEnumerable<User>> GetUsersByNameAsync(string name, string surname)

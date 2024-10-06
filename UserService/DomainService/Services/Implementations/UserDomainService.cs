@@ -17,7 +17,7 @@ public class UserDomainService : IUserDomainService
         _userMapper = userMapper;
     }
 
-    public async Task<UserResponseDto> CreateUserAsync(CreateUserRequestDto dto)
+    public async Task<UserResponseDto> CreateUserAsync(UserRequestDto dto)
     {
         // Маппинг из DTO в доменную модель
         var user = _userMapper.ToDomain(dto);

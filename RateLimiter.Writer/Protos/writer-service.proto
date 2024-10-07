@@ -4,6 +4,38 @@ option csharp_namespace = "RateLimiter.Writer";
 
 package writer;
 
+import "google/protobuf/wrappers.proto";
+
+message CreateLimitRequest {
+  string route = 1;
+  int32 rpm = 2;
+}
+
+message UpdateLimitRequest {
+  string route = 1;
+  int32 rpm = 2;
+}
+
+message GetLimitRequest {
+  string route = 1;
+}
+
+message DeleteLimitRequest {
+  string route = 1;
+}
+
+message SuccessReply {
+  bool response = 1;
+}
+
+message LimitDataReply {
+  string route = 1;
+  int32 rpm = 2;
+}
+
 service Writer {
-  
+  rpc Create (CreateLimitRequest) returns (LimitDataReply);
+  rpc Get (GetLimitRequest) returns (LimitDataReply);
+  rpc Update (UpdateLimitRequest) returns (SuccessReply);
+  rpc Delete (DeleteLimitRequest) returns (SuccessReply);
 }

@@ -11,7 +11,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
+        <PackageReference Include="FluentValidation" Version="11.10.0" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.57.0"/>
+        <PackageReference Include="Npgsql" Version="8.0.4" />
+        <PackageReference Include="Riok.Mapperly" Version="4.0.0-next.4" />
     </ItemGroup>
 
     <ItemGroup>

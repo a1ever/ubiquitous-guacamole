@@ -1,9 +1,11 @@
-﻿using FluentValidation;
+﻿using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using UserService.DomainService.Domain;
+using UserService.DomainService.DTOs;
 using UserService.DomainService.Repositories.Abstractions;
 using UserService.DomainService.Services.Abstractions;
-using UserService.DomainService.DTOs;
 using UserService.DomainService.Mappings;
+using ValidationException = FluentValidation.ValidationException;
 
 namespace UserService.DomainService.Services.Implementations;
 

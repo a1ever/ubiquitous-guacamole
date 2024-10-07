@@ -10,9 +10,10 @@ public class UserRepository: IUserRepository
 {
     private readonly IDbConnection _dbConnection;
 
-    public UserRepository(IDbConnection connectionString)
+    public UserRepository(IDbConnectionString connectionString)
     {
-        this._dbConnection = connectionString;
+        
+        this._dbConnection = new NpgsqlConnection(connectionString.Connst);
     }
 
     public async Task<bool> CreateUserAsync(User user)
@@ -44,7 +45,7 @@ public class UserRepository: IUserRepository
     {
         var sql = "CALL update_user_data(@Id, @Password, @Name, @Surname, @Age)";
         var rowsAffected = await _dbConnection.ExecuteAsync(sql, new { Id = user.Id, Password = user.Password, Name = user.Name, Surname = user.Surname, Age = user.Age });
-        return rowsAffected > 0; // Return true if operation was successful
+        return rowsAffected > 0;
     }
 
     public async Task<bool> DeleteUserAsync(int id)

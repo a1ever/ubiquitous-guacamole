@@ -2,8 +2,8 @@
     RETURNS TABLE(id INT, login VARCHAR, password VARCHAR, name VARCHAR, surname VARCHAR, age INT) AS $$
 BEGIN
     RETURN QUERY
-        SELECT id, login, password, name, surname, age
+        SELECT users.id, users.login, users.password, users.name, users.surname, users.age
         FROM users
-        WHERE login = _login;
+        WHERE users.login = _login;
 END;
 $$ LANGUAGE plpgsql;

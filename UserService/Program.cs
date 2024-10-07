@@ -1,4 +1,5 @@
 using System.Data;
+using FluentValidation;
 using UserService.DomainService.Repositories.Abstractions;
 using UserService.DomainService.Services.Abstractions;
 using UserService.DomainService.Services.Implementations;
@@ -6,14 +7,18 @@ using UserService.GRPCServices;
 using UserService.GRPCServices.Mapper;
 using UserService.Repositories;
 using Npgsql;
+using UserService.DomainService.DTOs;
+using UserService.DomainService.Mappings;
+using UserService.DomainService.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddGrpc();
 
-var connectionString = builder.Configuration.GetConnectionString("Host=127.0.0.1;Database=postgres;Username=postgres;Port=5432;Password=;");
-builder.Services.AddScoped<IDbConnection>(sp => new NpgsqlConnection(connectionString));
-
+builder.Services.AddScoped<IDbConnectionString, DbConnectionString>();
+builder.Services.AddScoped<UserMapper>();
+builder.Services.AddScoped<IValidator<UserRequestDto>, CreateUserRequestDtoValidator>();
+builder.Services.AddScoped<IValidator<UserRequestDto>, UpdateUserRequestDtoValidator>();
 builder.Services.AddScoped<IUserDomainService, UserDomainService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<Mapper>();

@@ -18,10 +18,28 @@ public class UserRepository: IUserRepository
 
     public async Task<bool> CreateUserAsync(User user)
     {
-        var sql = "CALL create_user(@Login, @Password, @Name, @Surname, @Age)";
-        var rowsAffected = await _dbConnection.ExecuteAsync(sql, new { Login = user.Login, Password = user.Password, Name = user.Name, Surname = user.Surname, Age = user.Age });
-        return rowsAffected > 0;
+        // Используем SELECT для вызова функции, которая возвращает значение
+        var sql = "SELECT create_user(@Login, @Password, @Name, @Surname, @Age)";
+    
+        try
+        {
+            bool result = await _dbConnection.ExecuteScalarAsync<bool>(sql, new 
+            { 
+                Login = user.Login, 
+                Password = user.Password, 
+                Name = user.Name, 
+                Surname = user.Surname, 
+                Age = user.Age 
+            });
+        
+            return result;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Не удалось создать пользователя.", ex);
+        }
     }
+
 
     public async Task<User?> GetUserByIdAsync(int id)
     {

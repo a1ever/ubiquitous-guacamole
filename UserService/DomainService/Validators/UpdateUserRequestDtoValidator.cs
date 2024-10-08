@@ -14,7 +14,8 @@ public class UpdateUserRequestDtoValidator : AbstractValidator<UserRequestDto>
             .NotEmpty().WithMessage("Логин не должен быть пустым");
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Пароль не должен быть пустым");
+            .Must(password => password == null || !string.IsNullOrEmpty(password))
+            .WithMessage("Пароль не должен быть пустым, если он указан");
 
         // Поля Name, Surname и Age могут быть null, проверяем только если они заданы
         RuleFor(x => x.Name)

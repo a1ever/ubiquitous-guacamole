@@ -16,11 +16,14 @@ public class Mapper
     public UserRequestDto ToUserRequestDto(UpdateRequest request) => new UserRequestDto
     {
         Login = request.Login,
-        Password = request.Password,
-        Name = request.Name,
-        Surname = request.Surname,
+        Password = request.Password == "" ? null : request.Password,
+        Name = request.Name == "" ? null : request.Name,
+        Surname = request.Surname == "" ? null : request.Surname,
         Age = request.Age
     };
+
+
+
 
     public UserDataReply ToUserDataReply(UserResponseDto user) => new UserDataReply
     {

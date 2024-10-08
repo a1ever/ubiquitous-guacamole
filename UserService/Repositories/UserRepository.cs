@@ -18,7 +18,6 @@ public class UserRepository: IUserRepository
 
     public async Task<bool> CreateUserAsync(User user)
     {
-        // Используем SELECT для вызова функции, которая возвращает значение
         var sql = "SELECT create_user(@Login, @Password, @Name, @Surname, @Age)";
     
         try
@@ -61,10 +60,27 @@ public class UserRepository: IUserRepository
 
     public async Task<bool> UpdateUserAsync(User user)
     {
-        var sql = "CALL update_user_data(@Id, @Password, @Name, @Surname, @Age)";
-        var rowsAffected = await _dbConnection.ExecuteAsync(sql, new { Id = user.Id, Password = user.Password, Name = user.Name, Surname = user.Surname, Age = user.Age });
-        return rowsAffected > 0;
+        var sql = "SELECT update_user_data(@Id, @Password, @Name, @Surname, @Age)";
+    
+        try
+        {
+            bool result = await _dbConnection.ExecuteScalarAsync<bool>(sql, new 
+            { 
+                Id = user.Id, 
+                Password = user.Password, 
+                Name = user.Name, 
+                Surname = user.Surname, 
+                Age = user.Age 
+            });
+        
+            return result;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Не удалось обновить пользователя.", ex);
+        }
     }
+
 
     public async Task<bool> DeleteUserAsync(int id)
     {

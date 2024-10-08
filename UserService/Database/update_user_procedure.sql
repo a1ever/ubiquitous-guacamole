@@ -9,7 +9,6 @@
 DECLARE
     rows_affected INT;
 BEGIN
-    -- Выполняем UPDATE и сохраняем количество затронутых строк
     UPDATE users
     SET password = _password,
         name = _name,
@@ -17,10 +16,8 @@ BEGIN
         age = _age
     WHERE id = _id;
 
-    -- Получаем количество затронутых строк
     GET DIAGNOSTICS rows_affected = ROW_COUNT;
 
-    -- Если хотя бы одна строка обновлена, возвращаем TRUE, иначе FALSE
     IF rows_affected > 0 THEN
         RETURN TRUE;
     ELSE
@@ -28,7 +25,6 @@ BEGIN
     END IF;
 EXCEPTION
     WHEN OTHERS THEN
-        -- В случае ошибки возвращаем FALSE
         RETURN FALSE;
 END;
 $$;
